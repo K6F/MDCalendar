@@ -47,13 +47,13 @@
         
         calendarView.lineSpacing = 0.f;
         calendarView.itemSpacing = 0.0f;
-        calendarView.borderColor = [UIColor mightySlate];
+//        calendarView.borderColor = [UIColor mightySlate];
         calendarView.borderHeight = 1.f;
         calendarView.showsBottomSectionBorder = YES;
         
-        calendarView.textColor = [UIColor mightySlate];
-        calendarView.headerTextColor = [UIColor mightySlate];
-        calendarView.weekdayTextColor = [UIColor grandmasPillow];
+//        calendarView.textColor = [UIColor mightySlate];
+//        calendarView.headerTextColor = [UIColor mightySlate];
+//        calendarView.weekdayTextColor = [UIColor grandmasPillow];
         calendarView.cellBackgroundColor = [UIColor whiteColor];
         
         calendarView.highlightColor = [UIColor pacifica];
@@ -69,18 +69,57 @@
         
         [self.view addSubview:calendarView];
         self.calendarView = calendarView;
+
+        [calendarView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        NSLayoutConstraint *calendarViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView
+                                                                                        attribute:NSLayoutAttributeBottom
+                                                                                        relatedBy:NSLayoutRelationEqual
+                                                                                           toItem:self.view
+                                                                                        attribute:NSLayoutAttributeBottom
+                                                                                       multiplier:1
+                                                                                         constant:0];
+
+        NSLayoutConstraint *calendarViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView
+                                                                                        attribute:NSLayoutAttributeLeft
+                                                                                        relatedBy:NSLayoutRelationEqual
+                                                                                           toItem:self.view
+                                                                                        attribute:NSLayoutAttributeLeft
+                                                                                       multiplier:1
+                                                                                         constant:0];
+
+        NSLayoutConstraint *calendarViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView
+                                                                                        attribute:NSLayoutAttributeRight
+                                                                                        relatedBy:NSLayoutRelationEqual
+                                                                                           toItem:self.view
+                                                                                        attribute:NSLayoutAttributeRight
+                                                                                       multiplier:1
+                                                                                         constant:0];
+
+        NSLayoutConstraint *calendarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView
+                                                                                       attribute:NSLayoutAttributeHeight
+                                                                                       relatedBy:NSLayoutRelationEqual
+                                                                                          toItem:nil
+                                                                                       attribute:NSLayoutAttributeNotAnAttribute
+                                                                                      multiplier:1
+                                                                                        constant:320];
+
+        [self.view addConstraints:@[calendarViewBottomConstraint, calendarViewLeftConstraint, calendarViewRightConstraint, calendarViewHeightConstraint]];
+        [self.view layoutIfNeeded];
     }
     return self;
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    _calendarView.frame = self.view.bounds;
-    _calendarView.contentInset = UIEdgeInsetsMake([self.topLayoutGuide length], 0, [self.bottomLayoutGuide length], 0);
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self.view layoutIfNeeded];
 }
 
 #pragma mark - MDCalendarViewDelegate
+
+- (void)calendarView:(MDCalendar *)calendar didSelectStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+    NSLog(@"Selected Start Date: %@", [startDate descriptionWithLocale:[NSLocale currentLocale]]);
+    NSLog(@"Selected End Date: %@", [endDate descriptionWithLocale:[NSLocale currentLocale]]);
+}
 
 - (void)calendarView:(MDCalendar *)calendarView didSelectDate:(NSDate *)date {
     NSLog(@"Selected Date: %@", [date descriptionWithLocale:[NSLocale currentLocale]]);

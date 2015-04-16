@@ -458,13 +458,13 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         self.canSelectDaysBeforeStartDate = YES;
 
         _leftButton = [[UIButton alloc] init];
-        [self.leftButton setTitle:@"left" forState:UIControlStateNormal];
+        [self.leftButton setTitle:@"<" forState:UIControlStateNormal];
         [self.leftButton setTitleColor:_textColor forState:UIControlStateNormal];
         [self.leftButton setBackgroundColor:[UIColor whiteColor]];
         [self.leftButton addTarget:self action:@selector(previousMonth) forControlEvents:UIControlEventTouchUpInside];
 
         _rightButton = [[UIButton alloc] init];
-        [self.rightButton setTitle:@"right" forState:UIControlStateNormal];
+        [self.rightButton setTitle:@">" forState:UIControlStateNormal];
         [self.rightButton setTitleColor:_textColor forState:UIControlStateNormal];
         [self.rightButton setBackgroundColor:[UIColor whiteColor]];
         [self.rightButton addTarget:self action:@selector(nextMonth) forControlEvents:UIControlEventTouchUpInside];

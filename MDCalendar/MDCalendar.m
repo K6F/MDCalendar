@@ -491,7 +491,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
                                                                                          toItem:self
                                                                                       attribute:NSLayoutAttributeTop
                                                                                      multiplier:1
-                                                                                       constant:0];
+                                                                                       constant:10];
 
     NSLayoutConstraint *collectionViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
                                                                                     attribute:NSLayoutAttributeLeft

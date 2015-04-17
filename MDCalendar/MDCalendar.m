@@ -396,6 +396,7 @@ static CGFloat const kMDCalendarHeaderViewWeekdayBottomMargin  = 5.f;
 @property (nonatomic, strong) UICollectionViewFlowLayout *layout;
 @property (nonatomic, strong) UIButton *leftButton;
 @property (nonatomic, strong) UIButton *rightButton;
+@property (nonatomic, strong) UIView *topLine;
 
 @property (nonatomic, assign) NSDate *currentDate;
 @end
@@ -469,9 +470,13 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         [self.rightButton setBackgroundColor:[UIColor whiteColor]];
         [self.rightButton addTarget:self action:@selector(nextMonth) forControlEvents:UIControlEventTouchUpInside];
 
+        _topLine = [[UIView alloc] init];
+        [self.topLine setBackgroundColor:[UIColor grayColor]];
+
         [self addSubview:self.collectionView];
         [self addSubview:self.leftButton];
         [self addSubview:self.rightButton];
+        [self addSubview:self.topLine];
 
         [self setConstraints];
     }
@@ -580,6 +585,38 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
                                                                                  multiplier:1
                                                                                    constant:30];
     [self addConstraints:@[rightButtonHeightConstraint, rightButtonRightConstraint, rightButtonTopConstraint, rightButtonWidthConstraint]];
+
+    [self.topLine setTranslatesAutoresizingMaskIntoConstraints:NO];
+    NSLayoutConstraint *topLineTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
+                                                                            attribute:NSLayoutAttributeTop
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self
+                                                                            attribute:NSLayoutAttributeTop
+                                                                           multiplier:1
+                                                                             constant:0];
+    NSLayoutConstraint *topLineLeftConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                           multiplier:1
+                                                                             constant:0];
+
+    NSLayoutConstraint *topLineRightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
+                                                                            attribute:NSLayoutAttributeRight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self
+                                                                            attribute:NSLayoutAttributeRight
+                                                                           multiplier:1
+                                                                             constant:0];
+    NSLayoutConstraint *topLineHeightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:nil
+                                                                            attribute:NSLayoutAttributeNotAnAttribute
+                                                                           multiplier:1
+                                                                             constant:.5];
+    [self addConstraints:@[topLineHeightConstraint, topLineLeftConstraint, topLineRightConstraint, topLineTopConstraint]];
 }
 
 - (void)layoutSubviews {

@@ -415,7 +415,6 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     self = [super initWithFrame:frame];
     if (self) {
         [self setBackgroundColor:[UIColor whiteColor]];
-        [self setClipsToBounds:YES];
 
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
         layout.minimumInteritemSpacing  = kMDCalendarViewItemSpacing;
@@ -628,10 +627,6 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 }
 
 #pragma mark - Custom Accessors
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor {
-    _collectionView.backgroundColor = backgroundColor;
-}
 
 - (void)setContentInset:(UIEdgeInsets)contentInset {
     _collectionView.contentInset = contentInset;

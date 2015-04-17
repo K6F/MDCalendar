@@ -413,7 +413,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self setBackgroundColor:[UIColor magentaColor]];
+        [self setBackgroundColor:[UIColor whiteColor]];
         [self setClipsToBounds:YES];
 
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
@@ -424,7 +424,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.dataSource = self;
         _collectionView.delegate   = self;
-        _collectionView.backgroundColor = [UIColor blueColor];
+        _collectionView.backgroundColor = [UIColor whiteColor];
         _collectionView.allowsMultipleSelection = YES;
         _collectionView.scrollEnabled = NO;
 

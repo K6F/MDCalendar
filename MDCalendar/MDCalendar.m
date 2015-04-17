@@ -410,8 +410,8 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 @implementation MDCalendar
 
-- (instancetype)init {
-    self = [super init];
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     if (self) {
         [self setBackgroundColor:[UIColor whiteColor]];
         [self setClipsToBounds:YES];

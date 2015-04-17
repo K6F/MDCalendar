@@ -859,8 +859,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [self.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-    [self.collectionView reloadData];
+    [self collectionView:collectionView didSelectItemAtIndexPath:indexPath];
 }
 
 //- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath {

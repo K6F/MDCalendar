@@ -584,6 +584,10 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    if(self.selectedStartDate){
+        NSIndexPath *indexPath = [self indexPathForDate:self.selectedStartDate];
+        [self scrollCalendarToTopOfSection:indexPath.section animated:NO];
+    }
 }
 
 #pragma mark - Custom Accessors

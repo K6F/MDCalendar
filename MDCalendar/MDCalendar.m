@@ -107,22 +107,25 @@ static NSString * const kMDCalendarViewCellIdentifier = @"kMDCalendarViewCellIde
 }
 
 - (void)setSelected:(BOOL)selected {
-    UIView *highlightView = _highlightView;
-    highlightView.hidden = !selected;
-    _label.textColor = selected ? self.backgroundColor : _textColor;
-
+//    UIView *highlightView = _highlightView;
+//    highlightView.hidden = !selected;
+//    _label.textColor = selected ? self.backgroundColor : _textColor;
+//
     if (!self.selected && selected) {
-        highlightView.transform = CGAffineTransformMakeScale(.1f, .1f);
-        [UIView animateWithDuration:0.4
-                              delay:0.0
-             usingSpringWithDamping:0.5
-              initialSpringVelocity:1.0
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             highlightView.transform = CGAffineTransformIdentity;
-                         } completion:^(BOOL finished) {
-                    nil;
-                }];
+        self.backgroundColor = _highlightView.backgroundColor;
+//        highlightView.transform = CGAffineTransformMakeScale(.1f, .1f);
+//        [UIView animateWithDuration:0.4
+//                              delay:0.0
+//             usingSpringWithDamping:0.5
+//              initialSpringVelocity:1.0
+//                            options:UIViewAnimationOptionCurveEaseInOut
+//                         animations:^{
+//                             highlightView.transform = CGAffineTransformIdentity;
+//                         } completion:^(BOOL finished) {
+//                    nil;
+//                }];
+    } else {
+        self.backgroundColor = [UIColor clearColor];
     }
     [super setSelected:selected];
 }

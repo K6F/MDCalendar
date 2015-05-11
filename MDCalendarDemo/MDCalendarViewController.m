@@ -66,7 +66,23 @@
         calendarView.endDate = endDate;
         calendarView.delegate = self;
         calendarView.canSelectDaysBeforeStartDate = NO;
-        
+        [calendarView setHintLabelTopTextBlock:^(NSDate *theStartDate, NSDate *theEndDate){
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"MMM d, yyyy"];
+            if(theStartDate && theEndDate && [theEndDate isAfterDate:theStartDate]){
+                return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:theStartDate], [dateFormatter stringFromDate:theEndDate]];
+            } else {
+                return [dateFormatter stringFromDate:theStartDate];
+            }
+        }];
+        [calendarView setHintLabelBottomTextBlock:^(NSDate *theStartDate, NSDate *theEndDate){
+            if(theStartDate && theEndDate && [theEndDate isAfterDate:theStartDate]){
+                return [NSString stringWithFormat:@"%i days", [theStartDate numberOfDaysUntilEndDate:theEndDate]];
+            } else {
+                return @"Optional: select an end date";
+            }
+        }];
+
         [self.view addSubview:calendarView];
         self.calendarView = calendarView;
 
@@ -101,7 +117,7 @@
                                                                                           toItem:nil
                                                                                        attribute:NSLayoutAttributeNotAnAttribute
                                                                                       multiplier:1
-                                                                                        constant:320];
+                                                                                        constant:377];
 
         [self.view addConstraints:@[calendarViewBottomConstraint, calendarViewLeftConstraint, calendarViewRightConstraint, calendarViewHeightConstraint]];
         [self.view layoutIfNeeded];
@@ -119,6 +135,8 @@
 - (void)calendarView:(MDCalendar *)calendar didSelectStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     NSLog(@"Selected Start Date: %@", [startDate descriptionWithLocale:[NSLocale currentLocale]]);
     NSLog(@"Selected End Date: %@", [endDate descriptionWithLocale:[NSLocale currentLocale]]);
+    self.startDate = startDate;
+    self.endDate = endDate;
 }
 
 - (void)calendarView:(MDCalendar *)calendarView didSelectDate:(NSDate *)date {

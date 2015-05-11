@@ -23,6 +23,8 @@
 		0C50FBBC192FBCFC0043D2D5 /* MDCalendarDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C50FBBB192FBCFC0043D2D5 /* MDCalendarDemoTests.m */; };
 		0C50FBC9192FBD4A0043D2D5 /* MDCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C50FBC8192FBD4A0043D2D5 /* MDCalendarViewController.m */; };
 		0CB9451B194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CB9451A194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m */; };
+		10B7116C50D2712F0419CA95 /* MDTriangleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */; };
+		10B71A38600CE6FCDAD5F8CA /* MDBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B711CF5DC08CD88F88BF7B /* MDBubbleView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,10 @@
 		0C50FBC8192FBD4A0043D2D5 /* MDCalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarViewController.m; sourceTree = "<group>"; };
 		0CB94519194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+MDCalendarDemo.h"; sourceTree = "<group>"; };
 		0CB9451A194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+MDCalendarDemo.m"; sourceTree = "<group>"; };
+		10B7104F90660932B9FEAFB2 /* MDTriangleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDTriangleView.h; sourceTree = "<group>"; };
+		10B711CF5DC08CD88F88BF7B /* MDBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDBubbleView.m; sourceTree = "<group>"; };
+		10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDTriangleView.m; sourceTree = "<group>"; };
+		10B71D8C85BC3D690BC8D9D6 /* MDBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDBubbleView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +99,10 @@
 				0B7EA04D19364EB6009D95CC /* MDCalendar.m */,
 				0B7EA05019364EB6009D95CC /* NSDate+MDCalendar.h */,
 				0B7EA05119364EB6009D95CC /* NSDate+MDCalendar.m */,
+				10B711CF5DC08CD88F88BF7B /* MDBubbleView.m */,
+				10B71D8C85BC3D690BC8D9D6 /* MDBubbleView.h */,
+				10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */,
+				10B7104F90660932B9FEAFB2 /* MDTriangleView.h */,
 			);
 			path = MDCalendar;
 			sourceTree = "<group>";
@@ -282,6 +292,8 @@
 				0B7EA05419364EB6009D95CC /* NSDate+MDCalendar.m in Sources */,
 				0C50FBC9192FBD4A0043D2D5 /* MDCalendarViewController.m in Sources */,
 				0CB9451B194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m in Sources */,
+				10B71A38600CE6FCDAD5F8CA /* MDBubbleView.m in Sources */,
+				10B7116C50D2712F0419CA95 /* MDTriangleView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -62,7 +62,8 @@
 @protocol MDCalendarDelegate;
 
 @interface MDCalendar : UIView
-
+@property (nonatomic, copy) NSString *(^hintLabelTopTextBlock)(NSDate *startDate, NSDate *endDate);
+@property (nonatomic, copy) NSString *(^hintLabelBottomTextBlock)(NSDate *startDate, NSDate *endDate);
 @property (nonatomic, strong) NSDate *selectedEndDate;
 @property (nonatomic, assign) id<MDCalendarDelegate>delegate; /** A delegate that responds to calendar events. */
 

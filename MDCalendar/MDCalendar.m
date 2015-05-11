@@ -23,6 +23,8 @@
 //  SOFTWARE.
 
 #import "MDCalendar.h"
+#import "MDBubbleView.h"
+#import "MDTriangleView.h"
 
 @interface MDCalendarViewCell : UICollectionViewCell
 @property (nonatomic, assign) NSDate  *date;
@@ -34,6 +36,8 @@
 @property (nonatomic, assign) CGFloat  borderHeight;
 @property (nonatomic, assign) UIColor *borderColor;
 @property (nonatomic, assign) UIColor *indicatorColor;
+
+- (void)setSelectedBetweenRange:(BOOL)selected;
 @end
 
 @interface MDCalendarViewCell  ()
@@ -93,6 +97,7 @@ static NSString * const kMDCalendarViewCellIdentifier = @"kMDCalendarViewCellIde
 }
 
 - (void)setHighlightColor:(UIColor *)highlightColor {
+    _highlightColor = highlightColor;
     _highlightView.backgroundColor = highlightColor;
 }
 
@@ -107,23 +112,19 @@ static NSString * const kMDCalendarViewCellIdentifier = @"kMDCalendarViewCellIde
 }
 
 - (void)setSelected:(BOOL)selected {
-//    UIView *highlightView = _highlightView;
-//    highlightView.hidden = !selected;
     _label.textColor = selected ? self.backgroundColor : _textColor;
-//
-    if (!self.selected && selected) {
-        self.backgroundColor = _highlightView.backgroundColor;
-//        highlightView.transform = CGAffineTransformMakeScale(.1f, .1f);
-//        [UIView animateWithDuration:0.4
-//                              delay:0.0
-//             usingSpringWithDamping:0.5
-//              initialSpringVelocity:1.0
-//                            options:UIViewAnimationOptionCurveEaseInOut
-//                         animations:^{
-//                             highlightView.transform = CGAffineTransformIdentity;
-//                         } completion:^(BOOL finished) {
-//                    nil;
-//                }];
+    if (selected) {
+        self.backgroundColor = self.highlightColor;
+    } else {
+        self.backgroundColor = [UIColor clearColor];
+    }
+    [super setSelected:selected];
+}
+
+-(void)setSelectedBetweenRange:(BOOL)selected{
+    _label.textColor = selected ? self.backgroundColor : _textColor;
+    if (selected) {
+        self.backgroundColor = [_highlightColor colorWithAlphaComponent:.7];
     } else {
         self.backgroundColor = [UIColor clearColor];
     }
@@ -402,6 +403,8 @@ static CGFloat const kMDCalendarHeaderViewWeekdayBottomMargin  = 5.f;
 @property (nonatomic, strong) UIView *topLine;
 
 @property (nonatomic, assign) NSDate *currentDate;
+@property (nonatomic, strong) MDBubbleView *hintView;
+@property (nonatomic, strong) MDTriangleView *triangleView;
 @end
 
 #define DAYS_IN_WEEK 7
@@ -418,6 +421,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     self = [super initWithFrame:frame];
     if (self) {
         [self setBackgroundColor:[UIColor whiteColor]];
+        [self setClipsToBounds:YES];
 
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
         layout.minimumInteritemSpacing  = kMDCalendarViewItemSpacing;
@@ -623,10 +627,10 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    if(self.selectedStartDate){
-        NSIndexPath *indexPath = [self indexPathForDate:self.selectedStartDate];
-        [self scrollCalendarToTopOfSection:indexPath.section animated:NO];
-    }
+//    if(self.selectedStartDate){
+//        NSIndexPath *indexPath = [self indexPathForDate:self.selectedStartDate];
+//        [self scrollCalendarToTopOfSection:indexPath.section animated:NO];
+//    }
 }
 
 #pragma mark - Custom Accessors
@@ -799,12 +803,17 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
             cell.accessibilityElementsHidden = YES;
         }
         cell.userInteractionEnabled = NO;
-    } else if ((date && self.selectedStartDate && [date isEqualToDate:self.selectedStartDate]) || (date && self.selectedEndDate && [date isEqualToDate:self.selectedEndDate]) || (date && self.selectedStartDate && self.selectedEndDate && [date isAfterDate:self.selectedStartDate] && [date isBeforeDate:self.selectedEndDate])) {
+        [cell setSelected:NO];
+    } else if ((date && self.selectedStartDate && [date isEqualToDate:self.selectedStartDate]) || (date && self.selectedEndDate && [date isEqualToDate:self.selectedEndDate])) {
         // Handle cell selection
-        cell.selected = YES;
+        [cell setSelected:YES];
+        [collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+    } else if (date && self.selectedStartDate && self.selectedEndDate && [date isAfterDate:self.selectedStartDate] && [date isBeforeDate:self.selectedEndDate]){
+        [cell setSelectedBetweenRange:YES];
         [collectionView selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
     } else {
         [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+        [cell setSelected:NO];
     }
 
     cell.indicatorColor = showIndicator ? _indicatorColor : [UIColor clearColor];
@@ -856,6 +865,8 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         self.selectedEndDate = nil;
     }
     [self.collectionView reloadData];
+    [self showHintView:indexPath];
+
     if ([_delegate respondsToSelector:@selector(calendarView:didSelectStartDate:endDate:)]) {
         [_delegate calendarView:self didSelectStartDate:self.selectedStartDate endDate:self.selectedEndDate];
     }
@@ -942,6 +953,80 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     NSIndexPath *indexPath = [self.collectionView indexPathsForVisibleItems][0];
     if(indexPath.section > 0){
         [self scrollCalendarToTopOfSection:indexPath.section - 1 animated:YES];
+    }
+}
+
+-(void)showHintView:(NSIndexPath *)indexPath{
+    if(self.hintLabelTopTextBlock || self.hintLabelBottomTextBlock){
+        NSDate *date = [self dateForIndexPath:indexPath];
+        UICollectionViewLayoutAttributes *attributes = [self.collectionView layoutAttributesForItemAtIndexPath:indexPath];
+        CGPoint viewCenterPoint = [self.collectionView convertPoint:attributes.center toView:self];
+        CGPoint viewOriginPoint = [self.collectionView convertPoint:attributes.frame.origin toView:self];
+        if(self.triangleView){
+            [self.triangleView removeFromSuperview];
+        } else {
+            self.triangleView = [[MDTriangleView alloc] initWithColor:[UIColor blackColor]];
+            [self.triangleView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        }
+        if(self.hintView){
+            [self.hintView removeFromSuperview];
+        } else {
+            self.hintView = [[MDBubbleView alloc] init];
+            [self.hintView setTranslatesAutoresizingMaskIntoConstraints:NO];
+            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideHintView)];
+            [self.hintView addGestureRecognizer:tapGestureRecognizer];
+        }
+
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM d yyyy"];
+
+        NSString *topHintText = [dateFormatter stringFromDate:date];
+        NSString *bottomHintText = nil;
+        if(self.hintLabelTopTextBlock){
+            topHintText = self.hintLabelTopTextBlock(self.selectedStartDate, self.selectedEndDate);
+        }
+        if(self.hintLabelBottomTextBlock){
+            bottomHintText = self.hintLabelBottomTextBlock(self.selectedStartDate, self.selectedEndDate);
+        }
+        [self.hintView.topLabel setText:topHintText];
+        [self.hintView.bottomLabel setText:bottomHintText];
+
+        [self addSubview:self.triangleView];
+        [self addSubview:self.hintView];
+        NSLayoutConstraint *triangleViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.triangleView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.collectionView attribute:NSLayoutAttributeLeft multiplier:1 constant:viewCenterPoint.x];
+        NSLayoutConstraint *triangleViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.triangleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:10];
+        NSLayoutConstraint *triangleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.triangleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:20];
+        NSLayoutConstraint *triangleViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.triangleView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.collectionView attribute:NSLayoutAttributeTop multiplier:1 constant:viewOriginPoint.y - 10];
+
+        NSLayoutConstraint *hintViewCenterXConstraint = [NSLayoutConstraint constraintWithItem:self.hintView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.collectionView attribute:NSLayoutAttributeLeft multiplier:1 constant:viewCenterPoint.x];
+        NSLayoutConstraint *hintViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.hintView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:5];
+        NSLayoutConstraint *hintViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.hintView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:-5];
+        NSLayoutConstraint *hintViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.hintView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:45];
+        NSLayoutConstraint *hintViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.hintView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.triangleView attribute:NSLayoutAttributeTop multiplier:1 constant:1];
+        [hintViewCenterXConstraint setPriority:UILayoutPriorityDefaultHigh];
+
+        [self addConstraints:@[triangleViewBottomConstraint, triangleViewCenterXConstraint, triangleViewWidthConstraint, triangleViewHeightConstraint]];
+        [self addConstraints:@[hintViewHeightConstraint, hintViewBottomConstraint, hintViewCenterXConstraint, hintViewLeftConstraint, hintViewRightConstraint]];
+        [self layoutIfNeeded];
+    }
+}
+
+-(void)hideHintView{
+    [self.hintView removeFromSuperview];
+    [self.triangleView removeFromSuperview];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self hideHintView];
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    if(self.selectedEndDate){
+        NSIndexPath *indexPath = [self indexPathForDate:self.selectedEndDate];
+        [self showHintView:indexPath];
+    } else if (self.selectedStartDate){
+        NSIndexPath *indexPath = [self indexPathForDate:self.selectedStartDate];
+        [self showHintView:indexPath];
     }
 }
 @end

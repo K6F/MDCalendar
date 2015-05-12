@@ -24,7 +24,11 @@
 		0C50FBC9192FBD4A0043D2D5 /* MDCalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C50FBC8192FBD4A0043D2D5 /* MDCalendarViewController.m */; };
 		0CB9451B194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CB9451A194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m */; };
 		10B7116C50D2712F0419CA95 /* MDTriangleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */; };
+		10B711D779F0CBAB00352BEB /* MDCalendarWeekdaysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B713658058321C605ACDE7 /* MDCalendarWeekdaysView.m */; };
+		10B717D3C5E341E499DD9E77 /* MDCalendarFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B71F1B0E2A91DB39CC8476 /* MDCalendarFooterView.m */; };
 		10B71A38600CE6FCDAD5F8CA /* MDBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B711CF5DC08CD88F88BF7B /* MDBubbleView.m */; };
+		10B71A5D46E76ECB3C75512A /* MDCalendarViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B71E0278C3F8C8F1A7D26E /* MDCalendarViewCell.m */; };
+		10B71D56F3D6000C480ADAC6 /* MDCalendarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10B719704B6742ECC1F7867B /* MDCalendarHeaderView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,10 +66,18 @@
 		0C50FBC8192FBD4A0043D2D5 /* MDCalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarViewController.m; sourceTree = "<group>"; };
 		0CB94519194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+MDCalendarDemo.h"; sourceTree = "<group>"; };
 		0CB9451A194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+MDCalendarDemo.m"; sourceTree = "<group>"; };
+		10B7103986E4A9645BD47DAD /* MDCalendarFooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCalendarFooterView.h; sourceTree = "<group>"; };
 		10B7104F90660932B9FEAFB2 /* MDTriangleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDTriangleView.h; sourceTree = "<group>"; };
 		10B711CF5DC08CD88F88BF7B /* MDBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDBubbleView.m; sourceTree = "<group>"; };
+		10B712F3C570420F56DD26DE /* MDCalendarViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCalendarViewCell.h; sourceTree = "<group>"; };
+		10B713658058321C605ACDE7 /* MDCalendarWeekdaysView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarWeekdaysView.m; sourceTree = "<group>"; };
+		10B719704B6742ECC1F7867B /* MDCalendarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarHeaderView.m; sourceTree = "<group>"; };
 		10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDTriangleView.m; sourceTree = "<group>"; };
 		10B71D8C85BC3D690BC8D9D6 /* MDBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDBubbleView.h; sourceTree = "<group>"; };
+		10B71DCE9C23FEBE5BCCFA2B /* MDCalendarHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCalendarHeaderView.h; sourceTree = "<group>"; };
+		10B71E0278C3F8C8F1A7D26E /* MDCalendarViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarViewCell.m; sourceTree = "<group>"; };
+		10B71E06C9BC00DF8B4ABCFE /* MDCalendarWeekdaysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MDCalendarWeekdaysView.h; sourceTree = "<group>"; };
+		10B71F1B0E2A91DB39CC8476 /* MDCalendarFooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MDCalendarFooterView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +115,14 @@
 				10B71D8C85BC3D690BC8D9D6 /* MDBubbleView.h */,
 				10B71C57DEFEBE74B8B6FD35 /* MDTriangleView.m */,
 				10B7104F90660932B9FEAFB2 /* MDTriangleView.h */,
+				10B71E0278C3F8C8F1A7D26E /* MDCalendarViewCell.m */,
+				10B712F3C570420F56DD26DE /* MDCalendarViewCell.h */,
+				10B713658058321C605ACDE7 /* MDCalendarWeekdaysView.m */,
+				10B71E06C9BC00DF8B4ABCFE /* MDCalendarWeekdaysView.h */,
+				10B719704B6742ECC1F7867B /* MDCalendarHeaderView.m */,
+				10B71DCE9C23FEBE5BCCFA2B /* MDCalendarHeaderView.h */,
+				10B71F1B0E2A91DB39CC8476 /* MDCalendarFooterView.m */,
+				10B7103986E4A9645BD47DAD /* MDCalendarFooterView.h */,
 			);
 			path = MDCalendar;
 			sourceTree = "<group>";
@@ -294,6 +314,10 @@
 				0CB9451B194CFFE800BE3BB1 /* UIColor+MDCalendarDemo.m in Sources */,
 				10B71A38600CE6FCDAD5F8CA /* MDBubbleView.m in Sources */,
 				10B7116C50D2712F0419CA95 /* MDTriangleView.m in Sources */,
+				10B71A5D46E76ECB3C75512A /* MDCalendarViewCell.m in Sources */,
+				10B711D779F0CBAB00352BEB /* MDCalendarWeekdaysView.m in Sources */,
+				10B71D56F3D6000C480ADAC6 /* MDCalendarHeaderView.m in Sources */,
+				10B717D3C5E341E499DD9E77 /* MDCalendarFooterView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

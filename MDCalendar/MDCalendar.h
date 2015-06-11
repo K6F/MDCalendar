@@ -249,6 +249,7 @@
 */
 - (void)scrollCalendarToDate:(NSDate *)date animated:(BOOL)animated;
 
+- (void)refreshView;
 @end
 
 

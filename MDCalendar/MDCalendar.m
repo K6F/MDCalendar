@@ -663,4 +663,8 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         [self showHintView:indexPath];
     }
 }
+
+-(void)refreshView{
+    [self.collectionView reloadData];
+}
 @end

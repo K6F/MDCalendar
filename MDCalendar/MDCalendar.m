@@ -665,6 +665,9 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 }
 
 -(void)refreshView{
+    if(!self.selectedStartDate && !self.selectedEndDate){
+        [self hideHintView];
+    }
     [self.collectionView reloadData];
 }
 @end

@@ -413,7 +413,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
         headerView.weekdayTextColor = self.weekdayTextColor;
 
         NSDate *date = [self dateForFirstDayOfSection:indexPath.section];
-        headerView.shouldShowYear = [date year] != [self.startDate year];
+        headerView.shouldShowYear = YES;
         headerView.firstDayOfMonth = date;
         [headerView setTag:indexPath.section + 1];
         view = headerView;

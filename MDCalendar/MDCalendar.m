@@ -65,13 +65,13 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
 
 +(CGFloat)suggestedHeight{
     if([self iPhone4sAndLower]){
-        return 335;
+        return 340;
     } else if ([self iPhone6]){
-        return 383;
+        return 388;
     } else if ([self iPhone6Plus]){
-        return 418;
+        return 423;
     } else {
-        return 335;
+        return 340;
     }
 }
 

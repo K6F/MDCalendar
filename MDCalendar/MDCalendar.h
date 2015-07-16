@@ -62,9 +62,20 @@
 @protocol MDCalendarDelegate;
 
 @interface MDCalendar : UIView
-@property (nonatomic, copy) NSString *(^hintLabelTopTextBlock)(NSDate *startDate, NSDate *endDate);
-@property (nonatomic, copy) NSString *(^hintLabelBottomTextBlock)(NSDate *startDate, NSDate *endDate);
+@property (nonatomic, assign) BOOL shouldSelectDateRange;
+@property (nonatomic, copy) NSString *(^hintLabelTopTextBlock)(NSDate *startDate, NSDate *endDate);    //implement at least one of these blocks to show a hint bubble
+@property (nonatomic, copy) NSString *(^hintLabelBottomTextBlock)(NSDate *startDate, NSDate *endDate); //implement at least one of these blocks to show a hint bubble
+
+/**
+* Allows you to manually specify a date (or start date if using date ranges) to be selected when the calendar is set-up.
+*/
+@property (nonatomic, strong) NSDate  *selectedStartDate;  /**< default is startDate */
+
+/**
+* Allows you to manually specify an end date to be selected when the calendar is set-up.
+*/
 @property (nonatomic, strong) NSDate *selectedEndDate;
+
 @property (nonatomic, assign) id<MDCalendarDelegate>delegate; /** A delegate that responds to calendar events. */
 
 ///--------------------------------
@@ -137,12 +148,6 @@
 */
 @property (nonatomic, strong) NSDate  *endDate;
 
-/**
-* Allows you to manually specify a date to be selected when the calendar is set-up.
-* Defaults to @see startDate
-*/
-@property (nonatomic, strong) NSDate  *selectedStartDate;  /**< default is startDate */
-
 
 ///--------------------------------
 /// @name Appearance : Fonts
@@ -202,9 +207,9 @@
 
 /**
 * Background color for day cells.
-* Deafault is `nil`
+* Default is `nil`
 */
-@property (nonatomic, strong) UIColor *cellBackgroundColor;
+@property (nonatomic, strong) UIColor *highlightTextColor;
 
 /**
 * Color for day indicator (dots)
@@ -230,7 +235,7 @@
 *
 * Setting this to `YES` will show days not in the current month in that month's rectangle.
 * Using the example above, before Thursday the 1st you would see Su 28, Mo 29, Tu 30, We 31.
-* If set to `YES` these cells will show with a 20% opacity of the @see cellBackgroundColor
+* If set to `YES` these cells will show with a 20% opacity of the @see highlightTextColor
 */
 @property (nonatomic, assign) BOOL showsDaysOutsideCurrentMonth;
 
@@ -240,6 +245,21 @@
 * this behavior.
 */
 @property (nonatomic, assign) BOOL canSelectDaysBeforeStartDate;    /**< Default is YES */
+
+/**
+*   suggested height based on device
+ */
++ (CGFloat)suggestedHeight;
+
+/**
+* @param frame -  either use CGRectZero and use constraints, or if using as an inputView of a textField or textView, set the frame height to [MDCalendar suggestedHeight]
+* @param startDate - defaults to today if nil. date the calendar starts on.
+* @param endDate - defaults to nil. date the calendar ends on.
+* @param selectedStartDate - defaults to nil. start date on calendar is highlighted
+* @param selectedEndDate - defaults to nil. end date on calendar is highlighted if shouldSelectDateRange is enabled.
+* @param shouldSelectDateRange - defaults to YES. controls whether the user is selecting a date range or 1 date
+*/
+- (instancetype)initWithFrame:(CGRect)frame startDate:(NSDate *)startDate endDate:(NSDate *)endDate selectedStartDate:(NSDate *)selectedStartDate selectedEndDate:(NSDate *)selectedEndDate shouldSelectDateRange:(BOOL)shouldSelectDateRange;
 
 /**
 * Scroll calendar to a specific date.

@@ -8,7 +8,6 @@
 
 @interface MDCalendarWeekdaysView : UIView
 @property (nonatomic, strong) NSArray *dayLabels;
-
 @property (nonatomic, assign) UIColor *textColor;
 @property (nonatomic, assign) UIFont  *font;
 

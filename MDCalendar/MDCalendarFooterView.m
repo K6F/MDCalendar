@@ -14,20 +14,37 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        UIView *bottomBorderView = [[UIView alloc] initWithFrame:CGRectZero];
-        [self addSubview:bottomBorderView];
-        self.bottomBorder = bottomBorderView;
+        [self initComponents];
+        [self addSubviews];
+        [self setConstraints];
     }
     return self;
 }
 
+-(void)initComponents{
+    self.bottomBorder = [[UIView alloc] init];
+    [self.bottomBorder setTranslatesAutoresizingMaskIntoConstraints:NO];
+}
+
+-(void)addSubviews{
+    [self addSubview:self.bottomBorder];
+}
+
+-(void)setConstraints{
+    NSLayoutConstraint *leftConstraint = [NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
+    NSLayoutConstraint *rightConstraint = [NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0];
+    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.borderHeight];
+    [self addConstraints:@[leftConstraint, rightConstraint, topConstraint, heightConstraint]];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _bottomBorder.frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), _borderHeight);
+    self.bottomBorder.frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), self.borderHeight);
 }
 
 - (void)setBorderColor:(UIColor *)borderColor {
-    _bottomBorder.backgroundColor = borderColor;
+    self.bottomBorder.backgroundColor = borderColor;
 }
 
 @end

@@ -47,9 +47,49 @@
 // Default spacing
 static CGFloat const kMDCalendarViewItemSpacing    = 0.f;
 static CGFloat const kMDCalendarViewLineSpacing    = 1.f;
-static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
+static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
 
 @implementation MDCalendar
+
++ (BOOL)iPhone6Plus {
+    return [UIScreen mainScreen].scale > 2.1;   // Scale is only 3 when not in scaled mode for iPhone 6 Plus
+}
+
++ (BOOL)iPhone6 {
+    return [UIScreen mainScreen].bounds.size.height == 667.0;
+}
+
++ (BOOL)iPhone4sAndLower{
+    return [UIScreen mainScreen].bounds.size.height == 480.0;
+}
+
++(CGFloat)suggestedHeight{
+    if([self iPhone4sAndLower]){
+        return 335;
+    } else if ([self iPhone6]){
+        return 383;
+    } else if ([self iPhone6Plus]){
+        return 418;
+    } else {
+        return 335;
+    }
+}
+
+-(instancetype)initWithFrame:(CGRect)frame startDate:(NSDate*)startDate endDate:(NSDate*)endDate selectedStartDate:(NSDate *)selectedStartDate selectedEndDate:(NSDate *)selectedEndDate shouldSelectDateRange:(BOOL)shouldSelectDateRange {
+    self = [self initWithFrame:frame];
+    if(self){
+        self.startDate = startDate;
+        self.shouldSelectDateRange = shouldSelectDateRange;
+        self.selectedStartDate = selectedStartDate;
+        self.selectedEndDate = selectedEndDate;
+        if(shouldSelectDateRange){
+            self.endDate = endDate;
+        } else {
+            self.endDate = nil;
+        }
+    }
+    return self;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -63,29 +103,27 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         self.layout = layout;
 
         self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-        _collectionView.dataSource = self;
-        _collectionView.delegate   = self;
-        _collectionView.backgroundColor = [UIColor whiteColor];
-        _collectionView.allowsMultipleSelection = YES;
-        _collectionView.scrollEnabled = NO;
+        self.collectionView.dataSource = self;
+        self.collectionView.delegate   = self;
+        self.collectionView.backgroundColor = [UIColor whiteColor];
+        self.collectionView.allowsMultipleSelection = YES;
+        self.collectionView.scrollEnabled = NO;
 
-        [_collectionView registerClass:[MDCalendarViewCell class] forCellWithReuseIdentifier:kMDCalendarViewCellIdentifier];
-        [_collectionView registerClass:[MDCalendarHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMDCalendarHeaderViewIdentifier];
-        [_collectionView registerClass:[MDCalendarFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:kMDCalendarFooterViewIdentifier];
-
-//        UIPanGestureRecognizer *what = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
-//        [self addGestureRecognizer:what];
+        [self.collectionView registerClass:[MDCalendarViewCell class] forCellWithReuseIdentifier:kMDCalendarViewCellIdentifier];
+        [self.collectionView registerClass:[MDCalendarHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMDCalendarHeaderViewIdentifier];
+        [self.collectionView registerClass:[MDCalendarFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:kMDCalendarFooterViewIdentifier];
 
         // Default Configuration
-        self.startDate      = _currentDate;
-        self.selectedStartDate   = _startDate;
-        self.selectedEndDate = [self.selectedStartDate dateByAddingDays:1];
-        self.endDate        = [[_startDate dateByAddingMonths:3] lastDayOfMonth];
+        self.shouldSelectDateRange  = YES;
+        self.startDate              = self.currentDate;
+        self.selectedStartDate      = self.startDate;
+        self.selectedEndDate        = [self.selectedStartDate dateByAddingDays:1];
+        self.endDate                = [[self.startDate dateByAddingMonths:3] lastDayOfMonth];
 
         self.dayFont        = [UIFont systemFontOfSize:17];
         self.weekdayFont    = [UIFont systemFontOfSize:12];
 
-        self.cellBackgroundColor    = nil;
+        self.highlightTextColor = nil;
         self.highlightColor         = self.tintColor;
         self.indicatorColor         = [UIColor lightGrayColor];
 
@@ -93,8 +131,8 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         self.headerFont             = [UIFont systemFontOfSize:20];
 
         self.textColor          = [UIColor darkGrayColor];
-        self.headerTextColor    = _textColor;
-        self.weekdayTextColor   = _textColor;
+        self.headerTextColor    = self.textColor;
+        self.weekdayTextColor   = self.textColor;
 
         self.canSelectDaysBeforeStartDate = YES;
 
@@ -125,137 +163,32 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 - (void)setConstraints{
     [self.collectionView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    NSLayoutConstraint *collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                                      attribute:NSLayoutAttributeTop
-                                                                                      relatedBy:NSLayoutRelationEqual
-                                                                                         toItem:self
-                                                                                      attribute:NSLayoutAttributeTop
-                                                                                     multiplier:1
-                                                                                       constant:10];
-
-    NSLayoutConstraint *collectionViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                                    attribute:NSLayoutAttributeLeft
-                                                                                    relatedBy:NSLayoutRelationEqual
-                                                                                       toItem:self
-                                                                                    attribute:NSLayoutAttributeLeft
-                                                                                   multiplier:1
-                                                                                     constant:0];
-
-    NSLayoutConstraint *collectionViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                                    attribute:NSLayoutAttributeRight
-                                                                                    relatedBy:NSLayoutRelationEqual
-                                                                                       toItem:self
-                                                                                    attribute:NSLayoutAttributeRight
-                                                                                   multiplier:1
-                                                                                     constant:0];
-
-    NSLayoutConstraint *collectionViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                                    attribute:NSLayoutAttributeBottom
-                                                                                    relatedBy:NSLayoutRelationEqual
-                                                                                       toItem:self
-                                                                                    attribute:NSLayoutAttributeBottom
-                                                                                   multiplier:1
-                                                                                     constant:0];
+    NSLayoutConstraint *collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:10];
+    NSLayoutConstraint *collectionViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
+    NSLayoutConstraint *collectionViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0];
+    NSLayoutConstraint *collectionViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
     [self addConstraints:@[collectionViewBottomConstraint, collectionViewTopConstraint, collectionViewLeftConstraint, collectionViewRightConstraint]];
 
     [self.leftButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-    NSLayoutConstraint *leftButtonLeftConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton
-                                                                                attribute:NSLayoutAttributeLeft
-                                                                                relatedBy:NSLayoutRelationEqual
-                                                                                   toItem:self
-                                                                                attribute:NSLayoutAttributeLeft
-                                                                               multiplier:1
-                                                                                 constant:10];
-
-    NSLayoutConstraint *leftButtonTopConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton
-                                                                                attribute:NSLayoutAttributeTop
-                                                                                relatedBy:NSLayoutRelationEqual
-                                                                                   toItem:self.collectionView
-                                                                                attribute:NSLayoutAttributeTop
-                                                                               multiplier:1
-                                                                                 constant:0];
-
-    NSLayoutConstraint *leftButtonWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton
-                                                                                 attribute:NSLayoutAttributeWidth
-                                                                                 relatedBy:NSLayoutRelationEqual
-                                                                                    toItem:nil
-                                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                                multiplier:1
-                                                                                  constant:60];
-
-    NSLayoutConstraint *leftButtonHeightConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton
-                                                                                 attribute:NSLayoutAttributeHeight
-                                                                                 relatedBy:NSLayoutRelationEqual
-                                                                                    toItem:nil
-                                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                                multiplier:1
-                                                                                  constant:30];
+    NSLayoutConstraint *leftButtonLeftConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:10];
+    NSLayoutConstraint *leftButtonTopConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.collectionView attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    NSLayoutConstraint *leftButtonWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:60];
+    NSLayoutConstraint *leftButtonHeightConstraint = [NSLayoutConstraint constraintWithItem:self.leftButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:30];
     [self addConstraints:@[leftButtonHeightConstraint, leftButtonLeftConstraint, leftButtonTopConstraint, leftButtonWidthConstraint]];
 
     [self.rightButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-    NSLayoutConstraint *rightButtonRightConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton
-                                                                                attribute:NSLayoutAttributeRight
-                                                                                relatedBy:NSLayoutRelationEqual
-                                                                                   toItem:self
-                                                                                attribute:NSLayoutAttributeRight
-                                                                               multiplier:1
-                                                                                 constant:-10];
-
-    NSLayoutConstraint *rightButtonTopConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton
-                                                                               attribute:NSLayoutAttributeTop
-                                                                               relatedBy:NSLayoutRelationEqual
-                                                                                  toItem:self.collectionView
-                                                                               attribute:NSLayoutAttributeTop
-                                                                              multiplier:1
-                                                                                constant:0];
-
-    NSLayoutConstraint *rightButtonWidthConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton
-                                                                                 attribute:NSLayoutAttributeWidth
-                                                                                 relatedBy:NSLayoutRelationEqual
-                                                                                    toItem:nil
-                                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                                multiplier:1
-                                                                                  constant:60];
-
-    NSLayoutConstraint *rightButtonHeightConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton
-                                                                                  attribute:NSLayoutAttributeHeight
-                                                                                  relatedBy:NSLayoutRelationEqual
-                                                                                     toItem:nil
-                                                                                  attribute:NSLayoutAttributeNotAnAttribute
-                                                                                 multiplier:1
-                                                                                   constant:30];
+    NSLayoutConstraint *rightButtonRightConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:-10];
+    NSLayoutConstraint *rightButtonTopConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.collectionView attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    NSLayoutConstraint *rightButtonWidthConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:60];
+    NSLayoutConstraint *rightButtonHeightConstraint = [NSLayoutConstraint constraintWithItem:self.rightButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:30];
     [self addConstraints:@[rightButtonHeightConstraint, rightButtonRightConstraint, rightButtonTopConstraint, rightButtonWidthConstraint]];
 
     [self.topLine setTranslatesAutoresizingMaskIntoConstraints:NO];
-    NSLayoutConstraint *topLineTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
-                                                                            attribute:NSLayoutAttributeTop
-                                                                            relatedBy:NSLayoutRelationEqual
-                                                                               toItem:self
-                                                                            attribute:NSLayoutAttributeTop
-                                                                           multiplier:1
-                                                                             constant:0];
-    NSLayoutConstraint *topLineLeftConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
-                                                                            attribute:NSLayoutAttributeLeft
-                                                                            relatedBy:NSLayoutRelationEqual
-                                                                               toItem:self
-                                                                            attribute:NSLayoutAttributeLeft
-                                                                           multiplier:1
-                                                                             constant:0];
+    NSLayoutConstraint *topLineTopConstraint = [NSLayoutConstraint constraintWithItem:self.topLine attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    NSLayoutConstraint *topLineLeftConstraint = [NSLayoutConstraint constraintWithItem:self.topLine attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
 
-    NSLayoutConstraint *topLineRightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
-                                                                            attribute:NSLayoutAttributeRight
-                                                                            relatedBy:NSLayoutRelationEqual
-                                                                               toItem:self
-                                                                            attribute:NSLayoutAttributeRight
-                                                                           multiplier:1
-                                                                             constant:0];
-    NSLayoutConstraint *topLineHeightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine
-                                                                            attribute:NSLayoutAttributeHeight
-                                                                            relatedBy:NSLayoutRelationEqual
-                                                                               toItem:nil
-                                                                            attribute:NSLayoutAttributeNotAnAttribute
-                                                                           multiplier:1
-                                                                             constant:.5];
+    NSLayoutConstraint *topLineRightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1 constant:0];
+    NSLayoutConstraint *topLineHeightConstraint = [NSLayoutConstraint constraintWithItem:self.topLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:.5];
     [self addConstraints:@[topLineHeightConstraint, topLineLeftConstraint, topLineRightConstraint, topLineTopConstraint]];
 }
 
@@ -270,19 +203,19 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 #pragma mark - Custom Accessors
 
 - (void)setContentInset:(UIEdgeInsets)contentInset {
-    _collectionView.contentInset = contentInset;
+    self.collectionView.contentInset = contentInset;
 }
 
 - (void)setItemSpacing:(CGFloat)itemSpacing {
-    _layout.minimumInteritemSpacing = itemSpacing;
+    self.layout.minimumInteritemSpacing = itemSpacing;
 }
 
 - (void)setLineSpacing:(CGFloat)lineSpacing {
-    _layout.minimumLineSpacing = lineSpacing;
+    self.layout.minimumLineSpacing = lineSpacing;
 }
 
 - (CGFloat)lineSpacing {
-    return _layout.minimumLineSpacing;
+    return self.layout.minimumLineSpacing;
 }
 
 - (void)setBorderHeight:(CGFloat)borderHeight {
@@ -293,17 +226,13 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 }
 
 - (NSDate *)currentDate {
-//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//    [dateFormatter setDateFormat:@"MMM dd yyyy"];
-//    NSDate *date = [NSDate date];
-//    return [dateFormatter dateFromString:[dateFormatter stringFromDate:date]];
     return [NSDate date];
 }
 
 #pragma mark - Public Methods
 
 - (void)scrollCalendarToDate:(NSDate *)date animated:(BOOL)animated {
-    UICollectionView *collectionView = _collectionView;
+    UICollectionView *collectionView = self.collectionView;
     NSIndexPath *indexPath = [self indexPathForDate:date];
     NSSet *visibleIndexPaths = [NSSet setWithArray:[collectionView indexPathsForVisibleItems]];
     if (indexPath && [visibleIndexPaths count] && ![visibleIndexPaths containsObject:indexPath]) {
@@ -311,15 +240,22 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     }
 }
 
+-(void)refreshView{
+    if(!self.selectedStartDate && !self.selectedEndDate){
+        [self hideHintView];
+    }
+    [self.collectionView reloadData];
+}
+
 #pragma mark - Private Methods & Helper Functions
 
 - (NSInteger)monthForSection:(NSInteger)section {
-    NSDate *firstDayOfMonth = [[_startDate firstDayOfMonth] dateByAddingMonths:section];
+    NSDate *firstDayOfMonth = [[self.startDate firstDayOfMonth] dateByAddingMonths:section];
     return [firstDayOfMonth month];
 }
 
 - (NSDate *)dateForFirstDayOfSection:(NSInteger)section {
-    return [[_startDate firstDayOfMonth] dateByAddingMonths:section];
+    return [[self.startDate firstDayOfMonth] dateByAddingMonths:section];
 }
 
 - (NSDate *)dateForLastDayOfSection:(NSInteger)section {
@@ -339,7 +275,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 }
 
 - (NSDate *)dateForIndexPath:(NSIndexPath *)indexPath {
-    NSDate *date = [_startDate dateByAddingMonths:indexPath.section];
+    NSDate *date = [self.startDate dateByAddingMonths:indexPath.section];
     NSDateComponents *components = [date components];
     components.day = indexPath.item + 1;
     date = [NSDate dateFromComponents:components];
@@ -355,7 +291,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 - (NSIndexPath *)indexPathForDate:(NSDate *)date {
     NSIndexPath *indexPath = nil;
     if (date) {
-        NSDate *firstDayOfCalendar = [_startDate firstDayOfMonth];
+        NSDate *firstDayOfCalendar = [self.startDate firstDayOfMonth];
         NSInteger section = [firstDayOfCalendar numberOfMonthsUntilEndDate:date];
         NSInteger dayOffset = [self offsetForSection:section];
         NSInteger dayIndex = [date day] + dayOffset - 1;
@@ -366,22 +302,30 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 - (CGRect)frameForHeaderForSection:(NSInteger)section {
     NSIndexPath *indexPath = [NSIndexPath indexPathForItem:1 inSection:section];
-    UICollectionViewLayoutAttributes *attributes = [_collectionView layoutAttributesForItemAtIndexPath:indexPath];
+    UICollectionViewLayoutAttributes *attributes = [self.collectionView layoutAttributesForItemAtIndexPath:indexPath];
     CGRect frameForFirstCell = attributes.frame;
-    CGFloat headerHeight = [self collectionView:_collectionView layout:_layout referenceSizeForHeaderInSection:section].height;
+    CGFloat headerHeight = [self collectionView:self.collectionView layout:self.layout referenceSizeForHeaderInSection:section].height;
     return CGRectOffset(frameForFirstCell, 0, -headerHeight);
 }
 
 - (void)scrollCalendarToTopOfSection:(NSInteger)section animated:(BOOL)animated {
     CGRect headerRect = [self frameForHeaderForSection:section];
-    CGPoint topOfHeader = CGPointMake(0, headerRect.origin.y - _collectionView.contentInset.top);
-    [_collectionView setContentOffset:topOfHeader animated:animated];
+    CGPoint topOfHeader = CGPointMake(0, headerRect.origin.y - self.collectionView.contentInset.top);
+    [self.collectionView setContentOffset:topOfHeader animated:animated];
+}
+
+-(NSInteger)currentSection{
+    NSArray *indexPaths = [self.collectionView indexPathsForVisibleItems];
+    if(indexPaths.count){
+        return ((NSIndexPath *)indexPaths[0]).section;
+    }
+    return 0;
 }
 
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return [_startDate numberOfMonthsUntilEndDate:_endDate] + 1;    // Adding 1 necessary to show month of end date
+    return [self.startDate numberOfMonthsUntilEndDate:self.endDate] + 1;    // Adding 1 necessary to show month of end date
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
@@ -397,22 +341,22 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     NSDate *date = [self dateForIndexPath:indexPath];
 
     MDCalendarViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMDCalendarViewCellIdentifier forIndexPath:indexPath];
-    cell.backgroundColor = _cellBackgroundColor;
-    cell.font = _dayFont;
-    cell.textColor = [date isEqualToDateSansTime:[self currentDate]] ? _highlightColor : _textColor;
+    cell.backgroundColor = self.highlightTextColor;
+    cell.font = self.dayFont;
+    cell.textColor = [date isEqualToDateSansTime:[self currentDate]] ? self.highlightColor : self.textColor;
     cell.date = date;
-    cell.highlightColor = _highlightColor;
-    cell.borderHeight = _borderHeight;
-    cell.borderColor = _borderColor;
+    cell.highlightColor = self.highlightColor;
+    cell.borderHeight = self.borderHeight;
+    cell.borderColor = self.borderColor;
 
     BOOL showIndicator = NO;
-    if ([_delegate respondsToSelector:@selector(calendarView:shouldShowIndicatorForDate:)]) {
-        showIndicator = [_delegate calendarView:self shouldShowIndicatorForDate:date];
+    if ([self.delegate respondsToSelector:@selector(calendarView:shouldShowIndicatorForDate:)]) {
+        showIndicator = [self.delegate calendarView:self shouldShowIndicatorForDate:date];
     }
 
     NSInteger sectionMonth = [self monthForSection:indexPath.section];
 
-    cell.userInteractionEnabled = [self collectionView:collectionView shouldSelectItemAtIndexPath:indexPath] ? YES : NO;
+    cell.userInteractionEnabled = [self collectionView:collectionView shouldSelectItemAtIndexPath:indexPath];
 
     // Disable non-selectable cells
     if (![self collectionView:collectionView shouldSelectItemAtIndexPath:indexPath]) {
@@ -421,7 +365,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
         // If the cell is outside the selectable range, and it is not today, tell the user
         // that it is an invalid date ("dimmed" is what Apple uses for disabled buttons).
-        if (![date isEqualToDateSansTime:_selectedStartDate]) {
+        if (![date isEqualToDateSansTime:self.selectedStartDate]) {
             cell.accessibilityLabel = [cell.accessibilityLabel stringByAppendingString:@", dimmed"];
         }
     }
@@ -429,7 +373,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     // Handle showing cells outside of current month
     cell.accessibilityElementsHidden = NO;
     if ([date month] != sectionMonth) {
-        if (_showsDaysOutsideCurrentMonth) {
+        if (self.showsDaysOutsideCurrentMonth) {
             cell.backgroundColor = [cell.backgroundColor colorWithAlphaComponent:0.2];
         } else {
             cell.label.text = @"";
@@ -450,8 +394,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         [cell setSelected:NO];
     }
 
-    cell.indicatorColor = showIndicator ? _indicatorColor : [UIColor clearColor];
-
+    cell.indicatorColor = showIndicator ? self.indicatorColor : [UIColor clearColor];
     return cell;
 }
 
@@ -462,47 +405,64 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     if (kind == UICollectionElementKindSectionHeader) {
         MDCalendarHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMDCalendarHeaderViewIdentifier forIndexPath:indexPath];
 
-        headerView.backgroundColor = _headerBackgroundColor;
-        headerView.font = _headerFont;
-        headerView.weekdayFont = _weekdayFont;
-        headerView.textColor = _headerTextColor;
-        headerView.weekdayTextColor = _weekdayTextColor;
+        headerView.backgroundColor = self.headerBackgroundColor;
+        headerView.font = self.headerFont;
+        headerView.weekdayFont = self.weekdayFont;
+        headerView.textColor = self.headerTextColor;
+        headerView.weekdayTextColor = self.weekdayTextColor;
 
         NSDate *date = [self dateForFirstDayOfSection:indexPath.section];
-        headerView.shouldShowYear = [date year] != [_startDate year];
+        headerView.shouldShowYear = [date year] != [self.startDate year];
         headerView.firstDayOfMonth = date;
-
+        [headerView setTag:indexPath.section + 1];
         view = headerView;
     } else if (kind == UICollectionElementKindSectionFooter) {
         MDCalendarFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:kMDCalendarFooterViewIdentifier forIndexPath:indexPath];
-        footerView.borderHeight = _showsBottomSectionBorder ? _borderHeight : 0.f;
-        footerView.borderColor  = _borderColor;
+        footerView.borderHeight = self.showsBottomSectionBorder ? self.borderHeight : 0.f;
+        footerView.borderColor  = self.borderColor;
         view = footerView;
     }
-
     return view;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSDate *date = [self dateForIndexPath:indexPath];
-    if(self.selectedStartDate && self.selectedEndDate){
-        self.selectedStartDate = date;
-        self.selectedEndDate = nil;
-    } else if(self.selectedStartDate){
-        if([date isBeforeDate:self.selectedStartDate]){
+    if(self.shouldSelectDateRange){
+        if(self.selectedStartDate && self.selectedEndDate){
             self.selectedStartDate = date;
+            self.selectedEndDate = nil;
+        } else if(self.selectedStartDate){
+            if([date isBeforeDate:self.selectedStartDate]){
+                self.selectedStartDate = date;
+            } else {
+                self.selectedEndDate = date;
+            }
         } else {
-            self.selectedEndDate = date;
+            self.selectedStartDate = date;
+            self.selectedEndDate = nil;
+        }
+        [self.collectionView reloadData];
+        [self showHintView:indexPath];
+
+        if ([self.delegate respondsToSelector:@selector(calendarView:didSelectStartDate:endDate:)]) {
+            [self.delegate calendarView:self didSelectStartDate:self.selectedStartDate endDate:self.selectedEndDate];
         }
     } else {
-        self.selectedStartDate = date;
-        self.selectedEndDate = nil;
-    }
-    [self.collectionView reloadData];
-    [self showHintView:indexPath];
+        if(self.selectedStartDate){
+            self.selectedStartDate = date;
+        } else if(self.selectedStartDate){
+            if([date isBeforeDate:self.selectedStartDate]){
+                self.selectedStartDate = date;
+            }
+        } else {
+            self.selectedStartDate = date;
+        }
+        [self.collectionView reloadData];
+        [self showHintView:indexPath];
 
-    if ([_delegate respondsToSelector:@selector(calendarView:didSelectStartDate:endDate:)]) {
-        [_delegate calendarView:self didSelectStartDate:self.selectedStartDate endDate:self.selectedEndDate];
+        if ([self.delegate respondsToSelector:@selector(calendarView:didSelectDate:)]) {
+            [self.delegate calendarView:self didSelectDate:self.selectedStartDate];
+        }
     }
 }
 
@@ -510,19 +470,15 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
     [self collectionView:collectionView didSelectItemAtIndexPath:indexPath];
 }
 
-//- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-//    return NO;
-//}
-
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSDate *date = [self dateForIndexPath:indexPath];
 
-    if ([date isBeforeDate:_startDate] && !_canSelectDaysBeforeStartDate) {
+    if ([date isBeforeDate:self.startDate] && !self.canSelectDaysBeforeStartDate) {
         return NO;
     }
 
-    if ([_delegate respondsToSelector:@selector(calendarView:shouldSelectDate:)]) {
-        return [_delegate calendarView:self shouldSelectDate:date];
+    if ([self.delegate respondsToSelector:@selector(calendarView:shouldSelectDate:)]) {
+        return [self.delegate calendarView:self shouldSelectDate:date];
     }
 
     return YES;
@@ -538,7 +494,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
     CGFloat boundsWidth = collectionView.bounds.size.width;
-    return CGSizeMake(boundsWidth, [MDCalendarHeaderView preferredHeightWithMonthLabelFont:_headerFont andWeekdayFont:_weekdayFont]);
+    return CGSizeMake(boundsWidth, [MDCalendarHeaderView preferredHeightWithMonthLabelFont:self.headerFont andWeekdayFont:self.weekdayFont]);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section {
@@ -554,33 +510,16 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
 // Helpers
 
 - (CGFloat)cellWidth {
-    CGFloat boundsWidth = _collectionView.bounds.size.width;
+    CGFloat boundsWidth = self.collectionView.bounds.size.width;
     return (CGFloat) (floor(boundsWidth / DAYS_IN_WEEK) - kMDCalendarViewItemSpacing);
-}
-
-- (void)panAction:(UIPanGestureRecognizer *)pan{
-    CGPoint point = [pan locationInView:self.collectionView];
-    NSIndexPath *indexPath = [self.collectionView indexPathForItemAtPoint:point];
-    NSDate *date = [self dateForIndexPath:indexPath];
-    if(!self.selectedStartDate || [date isAfterDate:self.selectedStartDate]){
-        self.selectedEndDate = date;
-        NSInteger days = [self.selectedStartDate numberOfDaysUntilEndDate:self.selectedEndDate];
-        if([self collectionView:self.collectionView shouldSelectItemAtIndexPath:indexPath]){
-            [self.collectionView selectItemAtIndexPath:indexPath animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-        }
-        for(int i = 1; i <= days; i++){
-            NSIndexPath *indexPath1 = [NSIndexPath indexPathForItem:indexPath.item - i inSection:indexPath.section];
-            if([self collectionView:self.collectionView shouldSelectItemAtIndexPath:indexPath1]){
-                [self.collectionView selectItemAtIndexPath:indexPath1 animated:NO scrollPosition:UICollectionViewScrollPositionNone];
-            }
-        }
-    }
-    NSLog(@"indexPath: %@", indexPath);
 }
 
 - (void)nextMonth{
     NSIndexPath *indexPath = [self.collectionView indexPathsForVisibleItems][0];
-    [self scrollCalendarToTopOfSection:indexPath.section + 1 animated:YES];
+    if(indexPath.section + 1 < self.collectionView.numberOfSections){
+        [self scrollCalendarToTopOfSection:indexPath.section + 1 animated:YES];
+
+    }
 }
 
 - (void)previousMonth{
@@ -662,12 +601,5 @@ static CGFloat const kMDCalendarViewSectionSpacing = 10.f;
         NSIndexPath *indexPath = [self indexPathForDate:self.selectedStartDate];
         [self showHintView:indexPath];
     }
-}
-
--(void)refreshView{
-    if(!self.selectedStartDate && !self.selectedEndDate){
-        [self hideHintView];
-    }
-    [self.collectionView reloadData];
 }
 @end

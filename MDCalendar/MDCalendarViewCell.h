@@ -12,14 +12,11 @@ static NSString * const kMDCalendarViewCellIdentifier = @"kMDCalendarViewCellIde
 @property (nonatomic, strong) UIView  *highlightView;
 @property (nonatomic, strong) UIView  *borderView;
 @property (nonatomic, strong) UIView  *indicatorView;
-
 @property (nonatomic, assign) NSDate  *date;
-
+@property (nonatomic, assign) CGFloat  borderHeight;
 @property (nonatomic, assign) UIFont  *font;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, assign) UIColor *highlightColor;
-
-@property (nonatomic, assign) CGFloat  borderHeight;
 @property (nonatomic, assign) UIColor *borderColor;
 @property (nonatomic, assign) UIColor *indicatorColor;
 

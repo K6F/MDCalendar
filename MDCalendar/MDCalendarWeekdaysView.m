@@ -8,8 +8,6 @@
 
 @implementation MDCalendarWeekdaysView
 
-@synthesize font = pFont;
-
 + (CGFloat)preferredHeightWithFont:(UIFont *)font {
     static CGFloat height;
     static dispatch_once_t onceTokenForWeekdayViewHeight;
@@ -56,22 +54,22 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
 
-    CGFloat labelWidth = CGRectGetWidth(self.bounds) / [_dayLabels count];
+    CGFloat labelWidth = CGRectGetWidth(self.bounds) / [self.dayLabels count];
     CGRect labelFrame = CGRectMake(0, 0, labelWidth, [MDCalendarWeekdaysView preferredHeightWithFont:self.font]);
-    for (UILabel *label in _dayLabels) {
+    for (UILabel *label in self.dayLabels) {
         label.frame = labelFrame;
         labelFrame = CGRectOffset(labelFrame, labelWidth, 0);
     }
 }
 
 - (void)setTextColor:(UIColor *)textColor {
-    for (UILabel *label in _dayLabels) {
+    for (UILabel *label in self.dayLabels) {
         label.textColor = textColor;
     }
 }
 
 - (void)setFont:(UIFont *)font {
-    for (UILabel *label in _dayLabels) {
+    for (UILabel *label in self.dayLabels) {
         label.font = font;
     }
 }

@@ -11,65 +11,66 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
-        label.textAlignment = NSTextAlignmentCenter;
-        label.adjustsFontSizeToFitWidth = YES;
-        self.label = label;
-
-        UIView *highlightView = [[UIView alloc] initWithFrame:CGRectZero];
-        highlightView.hidden = YES;
-        self.highlightView = highlightView;
-
-        UIView *bottomBorderView = [[UIView alloc] initWithFrame:CGRectZero];
-        bottomBorderView.hidden = YES;
-        self.borderView = bottomBorderView;
-
-        UIView *indicatorView = [[UIView alloc] initWithFrame:CGRectZero];
-        indicatorView.hidden = YES;
-        self.indicatorView = indicatorView;
-
-        [self.contentView addSubview:highlightView];
-        [self.contentView addSubview:label];
-        [self.contentView addSubview:bottomBorderView];
-        [self.contentView addSubview:indicatorView];
-
         self.isAccessibilityElement = YES;
+        [self initComponents];
+        [self addSubviews];
     }
     return self;
 }
 
-- (void)setDate:(NSDate *)date {
-    _label.text = MDCalendarDayStringFromDate(date);
+-(void)initComponents{
+    self.label = [[UILabel alloc] init];
+    [self.label setTextAlignment:NSTextAlignmentCenter];
+    [self.label setAdjustsFontSizeToFitWidth:YES];
 
+    self.highlightView = [[UIView alloc] init];
+    [self.highlightView setHidden:YES];
+
+    self.borderView = [[UIView alloc] init];
+    [self.borderView setHidden:YES];
+
+    self.indicatorView = [[UIView alloc] init];
+    [self.indicatorView setHidden:YES];
+}
+
+-(void)addSubviews{
+    [self.contentView addSubview:self.highlightView];
+    [self.contentView addSubview:self.label];
+    [self.contentView addSubview:self.borderView];
+    [self.contentView addSubview:self.indicatorView];
+}
+
+- (void)setDate:(NSDate *)date {
+    self.label.text = [self mdCalendarDayStringFromDate:date];
     self.accessibilityLabel = [NSString stringWithFormat:@"%@, %@ of %@ %@", [date weekdayString], [date dayOrdinalityString], [date monthString], @([date year])];
 }
 
 - (void)setFont:(UIFont *)font {
-    _label.font = font;
+    self.label.font = font;
 }
 
 - (void)setTextColor:(UIColor *)textColor {
     _textColor = textColor;
-    _label.textColor = textColor;
+    self.label.textColor = textColor;
 }
 
 - (void)setHighlightColor:(UIColor *)highlightColor {
     _highlightColor = highlightColor;
-    _highlightView.backgroundColor = highlightColor;
+    self.highlightView.backgroundColor = highlightColor;
 }
 
 - (void)setBorderColor:(UIColor *)borderColor {
     _borderView.backgroundColor = borderColor;
-    _borderView.hidden = NO;
+    self.borderView.hidden = NO;
 }
 
 - (void)setIndicatorColor:(UIColor *)indicatorColor {
     _indicatorView.backgroundColor = indicatorColor;
-    _indicatorView.hidden = NO;
+    self.indicatorView.hidden = NO;
 }
 
 - (void)setSelected:(BOOL)selected {
-    _label.textColor = selected ? self.backgroundColor : _textColor;
+    self.label.textColor = selected ? self.backgroundColor : self.textColor;
     if (selected) {
         self.backgroundColor = self.highlightColor;
     } else {
@@ -79,9 +80,9 @@
 }
 
 -(void)setSelectedBetweenRange:(BOOL)selected{
-    _label.textColor = selected ? self.backgroundColor : _textColor;
+    self.label.textColor = selected ? self.backgroundColor : self.textColor;
     if (selected) {
-        self.backgroundColor = [_highlightColor colorWithAlphaComponent:.7];
+        self.backgroundColor = [self.highlightColor colorWithAlphaComponent:.7];
     } else {
         self.backgroundColor = [UIColor clearColor];
     }
@@ -92,20 +93,20 @@
     [super layoutSubviews];
 
     CGSize viewSize = self.contentView.bounds.size;
-    _label.frame = CGRectMake(0, _borderHeight, viewSize.width, viewSize.height - _borderHeight);
+    self.label.frame = CGRectMake(0, self.borderHeight, viewSize.width, viewSize.height - self.borderHeight);
 
     // bounds of highlight view 10% smaller than cell
     CGFloat highlightViewInset = viewSize.height * 0.1f;
-    _highlightView.frame = CGRectInset(self.contentView.frame, highlightViewInset, highlightViewInset);
-    _highlightView.layer.cornerRadius = CGRectGetHeight(_highlightView.bounds) / 2;
-
-    _borderView.frame = CGRectMake(0, 0, viewSize.width, _borderHeight);
+    self.highlightView.frame = CGRectInset(self.contentView.frame, highlightViewInset, highlightViewInset);
+    self.highlightView.layer.cornerRadius = CGRectGetHeight(self.highlightView.bounds) / 2;
+    self.borderView.frame = CGRectMake(0, 0, viewSize.width, self.borderHeight);
 
     CGFloat dotInset = viewSize.height * 0.45f;
     CGRect indicatorFrame = CGRectInset(self.contentView.frame, dotInset, dotInset);
-    indicatorFrame.origin.y = _highlightView.frame.origin.y + _highlightView.frame.size.height - indicatorFrame.size.height * 1.5;
-    _indicatorView.frame = indicatorFrame;
-    _indicatorView.layer.cornerRadius = CGRectGetHeight(_indicatorView.bounds) / 2;
+    indicatorFrame.origin.y = self.highlightView.frame.origin.y + self.highlightView.frame.size.height - indicatorFrame.size.height * 1.5f;
+
+    self.indicatorView.frame = indicatorFrame;
+    self.indicatorView.layer.cornerRadius = CGRectGetHeight(self.indicatorView.bounds) / 2;
 
 }
 
@@ -113,13 +114,11 @@
     [super prepareForReuse];
 
     self.contentView.backgroundColor = nil;
-    _label.text = @"";
+    self.label.text = @"";
 }
 
-#pragma mark - C Helpers
-
-NSString * MDCalendarDayStringFromDate(NSDate *date) {
-    return [NSString stringWithFormat:@"%d", (int)[date day]];
+-(NSString *) mdCalendarDayStringFromDate:(NSDate *)date {
+    return [NSString stringWithFormat:@"%i", [date day]];
 }
 
 @end

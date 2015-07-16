@@ -212,6 +212,12 @@
 @property (nonatomic, strong) UIColor *highlightTextColor;
 
 /**
+* Current Day textColor
+* Default is highlightTextColor
+*/
+@property (nonatomic, strong) UIColor *currentDayTextColor;
+
+/**
 * Color for day indicator (dots)
 * Default is light gray
 */

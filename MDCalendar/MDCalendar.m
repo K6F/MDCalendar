@@ -124,6 +124,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
         self.weekdayFont    = [UIFont systemFontOfSize:12];
 
         self.highlightTextColor     = [UIColor whiteColor];
+        self.currentDayTextColor    = self.highlightTextColor;
         self.highlightColor         = self.tintColor;
         self.indicatorColor         = [UIColor lightGrayColor];
 
@@ -343,7 +344,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
     MDCalendarViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kMDCalendarViewCellIdentifier forIndexPath:indexPath];
     cell.backgroundColor = self.highlightTextColor;
     cell.font = self.dayFont;
-    cell.textColor = [date isEqualToDateSansTime:[self currentDate]] ? self.highlightColor : self.textColor;
+    cell.textColor = [date isEqualToDateSansTime:[self currentDate]] ? self.currentDayTextColor : self.textColor;
     cell.date = date;
     cell.highlightColor = self.highlightColor;
     cell.borderHeight = self.borderHeight;

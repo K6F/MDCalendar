@@ -123,7 +123,7 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
         self.dayFont        = [UIFont systemFontOfSize:17];
         self.weekdayFont    = [UIFont systemFontOfSize:12];
 
-        self.highlightTextColor = nil;
+        self.highlightTextColor     = [UIColor whiteColor];
         self.highlightColor         = self.tintColor;
         self.indicatorColor         = [UIColor lightGrayColor];
 

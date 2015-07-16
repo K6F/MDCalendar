@@ -131,9 +131,10 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
         self.headerBackgroundColor  = nil;
         self.headerFont             = [UIFont systemFontOfSize:20];
 
-        self.textColor          = [UIColor darkGrayColor];
-        self.headerTextColor    = self.textColor;
-        self.weekdayTextColor   = self.textColor;
+        self.textColor              = [UIColor darkGrayColor];
+        self.headerTextColor        = self.textColor;
+        self.headerButtonTextColor  = self.headerTextColor;
+        self.weekdayTextColor       = self.textColor;
 
         self.canSelectDaysBeforeStartDate = YES;
 
@@ -224,6 +225,12 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
     if (borderHeight) {
         self.lineSpacing = 0.f;
     }
+}
+
+-(void)setHeaderButtonTextColor:(UIColor *)headerButtonTextColor {
+    _headerButtonTextColor = headerButtonTextColor;
+    [self.leftButton setTitleColor:self.headerButtonTextColor forState:UIControlStateNormal];
+    [self.rightButton setTitleColor:self.headerButtonTextColor forState:UIControlStateNormal];
 }
 
 - (NSDate *)currentDate {

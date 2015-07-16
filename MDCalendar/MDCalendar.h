@@ -190,6 +190,12 @@
 @property (nonatomic, strong) UIColor *headerTextColor;
 
 /**
+* Text color for previous/next month buttons
+* Default is headerTextColor
+*/
+@property (nonatomic, strong) UIColor *headerButtonTextColor;
+
+/**
 * Text color for @see weekdayFont
 * Default is @see textColor
 */

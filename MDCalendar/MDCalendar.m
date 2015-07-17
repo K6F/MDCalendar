@@ -124,8 +124,8 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
         self.weekdayFont    = [UIFont systemFontOfSize:12];
 
         self.highlightTextColor     = [UIColor whiteColor];
-        self.currentDayTextColor    = self.highlightTextColor;
         self.highlightColor         = self.tintColor;
+        self.currentDayTextColor    = self.highlightColor;
         self.indicatorColor         = [UIColor lightGrayColor];
 
         self.headerBackgroundColor  = nil;
@@ -231,6 +231,11 @@ static CGFloat const kMDCalendarViewSectionSpacing = 100.f;
     _headerButtonTextColor = headerButtonTextColor;
     [self.leftButton setTitleColor:self.headerButtonTextColor forState:UIControlStateNormal];
     [self.rightButton setTitleColor:self.headerButtonTextColor forState:UIControlStateNormal];
+}
+
+-(void)setHighlightColor:(UIColor *)highlightColor {
+    _highlightColor = highlightColor;
+    _currentDayTextColor = highlightColor;
 }
 
 - (NSDate *)currentDate {

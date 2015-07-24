@@ -50,6 +50,7 @@
         calendarView.highlightTextColor = [UIColor whiteColor];
         calendarView.highlightColor = [UIColor pacifica];
         calendarView.indicatorColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+        calendarView.disabledTextColor = [[UIColor redColor] colorWithAlphaComponent:.4];
         [calendarView setHintLabelTopTextBlock:^(NSDate *theStartDate, NSDate *theEndDate){
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:@"MMM d, yyyy"];
@@ -103,6 +104,10 @@
     // show indicator for every 4th day
 //    return [date day] % 4 == 1;
     return YES;
+}
+
+- (BOOL)calendarView:(MDCalendar *)calendarView shouldSelectDate:(NSDate *)date {
+    return [date day] % 4 == 1;
 }
 
 @end

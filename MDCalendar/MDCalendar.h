@@ -235,6 +235,12 @@
 */
 @property (nonatomic, strong) UIColor *highlightColor;
 
+/**
+* Color for the dates that are unselectable.
+* Default is [textColor colorWithAlphaComponent:.2]
+*/
+@property (nonatomic, strong) UIColor *disabledTextColor;
+
 
 ///--------------------------------
 /// @name Selection behavior

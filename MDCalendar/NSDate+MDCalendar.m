@@ -35,7 +35,7 @@
     [components setYear:year];
     NSDate *date = [calendar dateFromComponents:components];
     
-    NSRange range = [calendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
+    NSRange range = [calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:date];
     return range.length;
 }
 
@@ -135,7 +135,7 @@
     NSDate *firstDayOfMonth = [self firstDayOfMonth];
     NSDate *lastDayOfMonth  = [self lastDayOfMonth];
     
-    NSDateComponents *components = [calendar components:NSDayCalendarUnit fromDate:firstDayOfMonth toDate:lastDayOfMonth options:0];
+    NSDateComponents *components = [calendar components:NSCalendarUnitDay fromDate:firstDayOfMonth toDate:lastDayOfMonth options:0];
     return [components day];
 }
 
@@ -192,7 +192,7 @@
 
 NSDateComponents * MDCalendarDateComponentsFromDate(NSDate *date) {
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    return [calendar components:NSYearCalendarUnit|NSCalendarUnitMonth|NSWeekCalendarUnit|NSWeekdayCalendarUnit|NSDayCalendarUnit fromDate:date];
+    return [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitWeekOfYear|NSCalendarUnitWeekday|NSCalendarUnitDay fromDate:date];
 }
 
 NSDate * MDCalendarDateFromComponents(NSDateComponents *components) {

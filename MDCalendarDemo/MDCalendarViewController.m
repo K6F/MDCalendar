@@ -41,55 +41,68 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        MDCalendar *calendarView = [[MDCalendar alloc] init];
-        
-        calendarView.backgroundColor = [UIColor whiteColor];
-        
+        MDCalendar *calendarView = [[MDCalendar alloc] initWithFrame:CGRectZero startDate:[NSDate date] endDate:[[NSDate date] dateByAddingMonths:12*25] selectedStartDate:nil selectedEndDate:nil shouldSelectDateRange:YES];
+        calendarView.canSelectDaysBeforeStartDate = NO;
+        calendarView.delegate = self;
         calendarView.lineSpacing = 0.f;
         calendarView.itemSpacing = 0.0f;
-        calendarView.borderColor = [UIColor mightySlate];
         calendarView.borderHeight = 1.f;
-        calendarView.showsBottomSectionBorder = YES;
-        
-        calendarView.textColor = [UIColor mightySlate];
-        calendarView.headerTextColor = [UIColor mightySlate];
-        calendarView.weekdayTextColor = [UIColor grandmasPillow];
-        calendarView.cellBackgroundColor = [UIColor whiteColor];
-        
+        calendarView.highlightTextColor = [UIColor whiteColor];
         calendarView.highlightColor = [UIColor pacifica];
         calendarView.indicatorColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-        
-        NSDate *startDate = [NSDate date];
-        NSDate *endDate = [startDate dateByAddingMonths:12*25];
-        
-        calendarView.startDate = startDate;
-        calendarView.endDate = endDate;
-        calendarView.delegate = self;
-        calendarView.canSelectDaysBeforeStartDate = NO;
+        [calendarView setHintLabelTopTextBlock:^(NSDate *theStartDate, NSDate *theEndDate){
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"MMM d, yyyy"];
+            if(theStartDate && theEndDate && [theEndDate isAfterDate:theStartDate]){
+                return [NSString stringWithFormat:@"%@ - %@", [dateFormatter stringFromDate:theStartDate], [dateFormatter stringFromDate:theEndDate]];
+            } else {
+                return [dateFormatter stringFromDate:theStartDate];
+            }
+        }];
+        [calendarView setHintLabelBottomTextBlock:^(NSDate *theStartDate, NSDate *theEndDate){
+            if(theStartDate && theEndDate && [theEndDate isAfterDate:theStartDate]){
+                return [NSString stringWithFormat:@"%i days", [theStartDate numberOfDaysUntilEndDate:theEndDate]];
+            } else {
+                return @"Optional: select an end date";
+            }
+        }];
         
         [self.view addSubview:calendarView];
         self.calendarView = calendarView;
+        
+        [calendarView setTranslatesAutoresizingMaskIntoConstraints:NO];
+        NSLayoutConstraint *calendarViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
+        NSLayoutConstraint *calendarViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
+        NSLayoutConstraint *calendarViewRightConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0];
+        NSLayoutConstraint *calendarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.calendarView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:[MDCalendar suggestedHeight]];
+        [self.view addConstraints:@[calendarViewBottomConstraint, calendarViewLeftConstraint, calendarViewRightConstraint, calendarViewHeightConstraint]];
+        [self.view layoutIfNeeded];
     }
     return self;
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    _calendarView.frame = self.view.bounds;
-    _calendarView.contentInset = UIEdgeInsetsMake([self.topLayoutGuide length], 0, [self.bottomLayoutGuide length], 0);
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self.view layoutIfNeeded];
 }
 
 #pragma mark - MDCalendarViewDelegate
+
+- (void)calendarView:(MDCalendar *)calendar didSelectStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+    NSLog(@"Selected Start Date: %@", [startDate descriptionWithLocale:[NSLocale currentLocale]]);
+    NSLog(@"Selected End Date: %@", [endDate descriptionWithLocale:[NSLocale currentLocale]]);
+    self.startDate = startDate;
+    self.endDate = endDate;
+}
 
 - (void)calendarView:(MDCalendar *)calendarView didSelectDate:(NSDate *)date {
     NSLog(@"Selected Date: %@", [date descriptionWithLocale:[NSLocale currentLocale]]);
 }
 
-- (BOOL) calendarView:(MDCalendar *)calendarView shouldShowIndicatorForDate:(NSDate *)date
-{
+- (BOOL)calendarView:(MDCalendar *)calendarView shouldShowIndicatorForDate:(NSDate *)date {
     // show indicator for every 4th day
-    return [date day] % 4 == 1;
+    //    return [date day] % 4 == 1;
+    return YES;
 }
 
 @end

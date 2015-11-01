@@ -48,8 +48,9 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         dateFormatter = [[NSDateFormatter alloc] init];
-        
-        NSString *localization = [NSBundle mainBundle].preferredLocalizations.firstObject;
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSArray *languages = [userDefaults objectForKey:@"AppleLanguages"];
+        NSString *localization = languages.firstObject;
         dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:localization];
     });
     
@@ -142,7 +143,7 @@
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
     NSDateComponents *components = [calendar components:NSCalendarUnitMonth fromDate:self toDate:endDate options:0];
-
+    
     return [components month];
 }
 
@@ -188,7 +189,7 @@
 
 
 #pragma mark - Helpers
-                  
+
 NSDateComponents * MDCalendarDateComponentsFromDate(NSDate *date) {
     NSCalendar *calendar = [NSCalendar currentCalendar];
     return [calendar components:NSYearCalendarUnit|NSCalendarUnitMonth|NSWeekCalendarUnit|NSWeekdayCalendarUnit|NSDayCalendarUnit fromDate:date];

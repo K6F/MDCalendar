@@ -26,17 +26,21 @@
 #import "MDAppDelegate.h"
 #import "MDCalendarViewController.h"
 
+#define kIsStoryboard 1
+
 @implementation MDAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-    MDCalendarViewController *calendarViewController = [[MDCalendarViewController alloc] init];
-    self.window.rootViewController = calendarViewController;
-    
-    self.window.backgroundColor = [UIColor whiteColor];
-    [self.window makeKeyAndVisible];
+    if (!kIsStoryboard) {
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        
+        MDCalendarViewController *calendarViewController = [[MDCalendarViewController alloc] init];
+        self.window.rootViewController = calendarViewController;
+        
+        self.window.backgroundColor = [UIColor whiteColor];
+        [self.window makeKeyAndVisible];
+    }
     return YES;
 }
 
